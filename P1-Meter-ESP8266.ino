@@ -33,7 +33,10 @@ long prevGAS = 0;
 char telegram[MAXLINELENGTH];
 
 #define SERIAL_RX     D5  // pin for SoftwareSerial RX
-SoftwareSerial mySerial(SERIAL_RX, -1, true, MAXLINELENGTH); // (RX, TX. inverted, buffer)
+// Change to comply with SoftwareSerial library changes
+SoftwareSerial mySerial;
+constexpr SoftwareSerialConfig swSerialConfig = SWSERIAL_8N1;
+constexpr int IUTBITRATE = 115200;
 
 unsigned int currentCRC=0;
 
@@ -46,6 +49,10 @@ void SendToDomoLog(char* message)
 void setup() {
   Serial.begin(115200);
   Serial.println("Booting");
+
+  // Change to comply with SoftwareSerial library changes
+  mySerial.begin(IUTBITRATE, swSerialConfig, SERIAL_RX, -1, true, MAXLINELENGTH); // (Bitrate, serial config, RX. inverted, buffer)
+  
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
 
@@ -296,6 +303,3 @@ void loop() {
   readTelegram();
   ArduinoOTA.handle();
 }
-
-
-
